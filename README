@@ -1,0 +1,46 @@
+Calin Teodor-Georgian
+
+        main:
+
+        - se salveaza toate datele primite ca argumente si citite din fisierul de intrare;
+        - se calculeaza numarul de taskuri de tip Map prin parcurgerea pe rand a fisierelor si
+          calcularea numarului total de fragmente din acestea (pentru citirea din fisiere am folosit
+          BufferedReader);
+        - se reparcurg fisierele, si se adauga pe rand taskurile de tip map ce urmeaza sa fie
+          rezolvate de workeri;
+
+                MapTask (clasa ce implementeaza interfata Callable) -> call:
+
+                - se citeste fragmentul care ii este dat spre a fi analizat;
+                - in cazul in care fragmentul nu se afla la inceputul fisierului, se citeste si
+                  elementul de dinaintea fragmentului, pentru a vedea daca fragmentul incepe la
+                  mijlocului unui cuvant; in caz afirmativ, se ignora primele caractere, pana la
+                  primul caracter non-alfanumeric;
+                - daca ultimul caracter din fragment este alfanumeric, se verifica daca dupa acesta
+                  mai urmeaza si alte caractere de acest gen, si daca da, se adauga si acestea
+                  fragmentului;
+                - se "sparge" fragmentul in cuvinte si se creeaza dictionarul si lista cu cele mai
+                  lungi cuvinte;
+                - se intoarce un obiect de tip MapTaskResult, ce contine numele fisierului analizat,
+                  dictionarul si lista;
+
+
+        - am folosit un semafor pentru a ma asigura ca toate taskurile de tip Map sunt rezolvate
+          inainte de a trece la cele de tip Reduce;
+        - se adauga pe rand taskurile de tip reduce; fiecare ReduceTask primeste rezultatele
+          obtinute de MapTask-urile care au analizat fisierul corespunzator acestuia;
+
+                ReduceTask (clasa de implementeaza interfata Callable) -> call:
+
+                - se creeaza un dictionar si o lista de acelasi fel cu cele intoarse de MapTask-uri,
+                  si se combina rezultatele de la MapTask-urile pe care le primeste;
+                - se calculeaza rangul cu formula data in enunt;
+                - se intoarce un obiect de tip ReduceTaskResult, ce contine numele fisierului,
+                  rangul si numarul de cuvinte de dimensiune maxima;
+
+        - am folosit din nou semaforul pentru a ma asigura ca toate taskurile de tip Reduce sunt
+          rezolvate inainte de a procesa si scrie rezultatele;
+        - se sorteaza rezultatele ReduceTask-urilor dupa rangul fisierelor si se scrie rezultatul
+          final in fisierul de iesire (am folosit FileWriter pentru a scrie in fisier);
+
+	Am adaugat si o serie de fisiere de test, ca exemplu pentru rularea programului.
